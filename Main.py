@@ -1,5 +1,7 @@
 import requests as req
 import json
+import time
+import datetime
 
 osList = ['pc_requirements','mac_requirements','linux_requirements']
 
@@ -9,52 +11,62 @@ file.close()
 gameList = json.loads(json.loads(gameListTxt))['applist']['apps']
 
 requirements = []
-i = 646
+i = 977
 del gameList[:i]
 written = 0
 for var in gameList:
-    try:
-        name = var['name']
-        appid = var['appid']
+    success = False
 
-        parsed = False
-        txt = req.get("https://store.steampowered.com/api/appdetails?appids=" + str(appid)).text
-        game = (json.loads(txt))[str(appid)]
-        i = i + 1
-        print(str(i) + " / " + str(len(gameList)))
-        print(name)
-        print(appid)
-        if game['success']:
-            game = game['data']
-        else:
-            continue
+    while not success:
+        try:
+            name = var['name']
+            appid = var['appid']
 
-        content = dict()
-        content['name'] = name
-        content['appid'] = appid
-        for os in osList:
-            content[os] = dict()
-            if os in game:
-                if 'minimum' in game[os]:
-                    content[os]['minimum'] = game[os]['minimum']
-                    parsed = True
-                if 'recommended' in game[os]:
-                    content[os]['recommended'] = game[os]['recommended']
-                    parsed = True
+            parsed = False
+            txt = req.get("https://store.steampowered.com/api/appdetails?appids=" + str(appid)).text
+            game = (json.loads(txt))[str(appid)]
+            i = i + 1
+            print(str(i) + " / " + str(len(gameList)))
+            print(name)
+            print(appid)
+            if game['success']:
+                game = game['data']
+            else:
+                success = True
+                continue
 
-        if parsed:
-            requirements.append(content)
+            content = dict()
+            content['name'] = name
+            content['appid'] = appid
+            for os in osList:
+                content[os] = dict()
+                if os in game:
+                    if 'minimum' in game[os]:
+                        content[os]['minimum'] = game[os]['minimum']
+                        parsed = True
+                    if 'recommended' in game[os]:
+                        content[os]['recommended'] = game[os]['recommended']
+                        parsed = True
 
-        written = written + 1
-        print("written : " + str(written))
-        if (written % 100) == 0:
-            file = open('req/requirement' + str(i) +'.json', 'w')
-            file.write(json.dumps(requirements))
-            file.close()
-            print('write!!!!')
-            requirements = []
-    except:
-        print("error?")
+            if parsed:
+                requirements.append(content)
+
+            written = written + 1
+            print("written : " + str(written))
+            if (written % 100) == 0:
+                file = open('req/requirement' + str(i) +'.json', 'w')
+                file.write(json.dumps(requirements))
+                file.close()
+                print('write!!!!')
+                requirements = []
+            success = True
+        except:
+            print("error?")
+            print(datetime.datetime.now())
+            print("waiting")
+            time.sleep(180)
+            print('wake up')
+            print(datetime.datetime.now())
 
 
 
