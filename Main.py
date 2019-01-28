@@ -9,9 +9,9 @@ file = open('gameList.json', 'r')
 gameListTxt = file.read()
 file.close()
 gameList = json.loads(json.loads(gameListTxt))['applist']['apps']
-
+listLength = len(gameList)
 requirements = []
-i = 3028
+i = 20546
 del gameList[:i]
 written = 0
 for var in gameList:
@@ -26,7 +26,7 @@ for var in gameList:
             txt = req.get("https://store.steampowered.com/api/appdetails?appids=" + str(appid)).text
             game = (json.loads(txt))[str(appid)]
             i = i + 1
-            print(str(i) + " / " + str(len(gameList)))
+            print(str(i) + " / " + str(listLength))
             print(name)
             print(appid)
             if game['success']:
@@ -64,7 +64,7 @@ for var in gameList:
             print("error?")
             print(datetime.datetime.now())
             print("waiting")
-            time.sleep(180)
+            time.sleep(10)
             print('wake up')
             print(datetime.datetime.now())
 
