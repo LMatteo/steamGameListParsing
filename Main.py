@@ -11,7 +11,7 @@ file.close()
 gameList = json.loads(json.loads(gameListTxt))['applist']['apps']
 
 requirements = []
-i = 977
+i = 3028
 del gameList[:i]
 written = 0
 for var in gameList:
