@@ -33,4 +33,5 @@ for game in games:
 file = open('uriGame.json','w')
 
 file.write(json.dumps(games))
+file.close()
 
